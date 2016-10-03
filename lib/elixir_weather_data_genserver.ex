@@ -36,46 +36,21 @@ defmodule ElixirWeatherData.GenServer do
   # @api_key "cb3b951fc2b009115c9f5ac870360ba6"
   # @lang "de"
   # @city "Claussnitz"
+  @open_weather_map_api Application.get_env(:elixir_weather_data, :open_weather_map_api)
 
   defp get_data(parameters = [api_key, language, coordinates]) do
     lat = round_value(coordinates.lat, 2)
     lon = round_value(coordinates.lon, 2)
     "http://api.openweathermap.org/data/2.5/weather?lat=#{lat}&lon=#{lon}&lang=#{language}&appid=#{api_key}"
-    #|> request_api
-    |> request_dummy
+    |> @open_weather_map_api.send_request
     |> parse
     |> create_data_map
     |> add_request_parameters(parameters)
   end
 
-  defp request_dummy(_url) do
-    {:ok, data} = Poison.encode(%{"base" => "stations", "clouds" => %{"all" => 76}, "cod" => 200,
-      "coord" => %{"lat" => 50.93, "lon" => 12.88}, "dt" => 1474494204,
-      "id" => 2939997,
-      "main" => %{"grnd_level" => 997.48, "humidity" => 97, "pressure" => 997.48,
-                  "sea_level" => 1026.54, "temp" => 287.625, "temp_max" => 287.625,
-                  "temp_min" => 287.625}, "name" => "Claussnitz",
-      "sys" => %{"country" => "DE", "message" => 0.0153, "sunrise" => 1474433699,
-                 "sunset" => 1474477575},
-      "weather" => [%{"description" => "überwiegend bewölkt", "icon" => "04n",
-                      "id" => 803, "main" => "Clouds"}],
-      "wind" => %{"deg" => 246, "speed" => 2.91}})
-    data
-  end
-
   defp cached_data_should_be_updated?({:error, _reason}), do: true
   defp cached_data_should_be_updated?({:ok, data}) do
     data[:created_at] < (timestamp_now - 5) #84600)
-  end
-
-  defp request_api(url) do
-    case HTTPoison.get(url) do
-      {:ok, %HTTPoison.Response{status_code: 200, body: body}} -> body
-      {:ok, %HTTPoison.Response{status_code: 404}} -> nil
-      {:error, %HTTPoison.Error{reason: reason}} ->
-        IO.inspect reason
-        nil
-    end
   end
 
   defp parse(nil), do: nil
