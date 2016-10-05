@@ -1,4 +1,6 @@
 defmodule ElixirWeatherData.OpenWeatherMapApi.HttpClient do
+  @behaviour ElixirWeatherData.OpenWeatherMapApi
+
   def send_request(url) do
     request_api(url)
   end

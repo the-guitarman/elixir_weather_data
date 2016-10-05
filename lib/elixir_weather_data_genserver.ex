@@ -27,7 +27,7 @@ defmodule ElixirWeatherData.GenServer do
   defp create_reply({:ok, data}) do
     {:reply, {:ok, Map.delete(data, :parameters)}, {:ok, data}}
   end
-  defp create_reply(parameters) when is_map{parameters} do
+  defp create_reply(parameters) do # when is_map{parameters} do
     case get_data(parameters) do
       {:ok, data} -> create_reply({:ok, data})
       {:error, parameters_map, error_reason} -> {:reply, {:error, error_reason}, {:error, parameters_map, error_reason}}
@@ -96,16 +96,11 @@ defmodule ElixirWeatherData.GenServer do
     data[:created_at] < (timestamp_now - one_hour_in_seconds)
   end
 
-  defp parse({:ok, body}) do
-    case Poison.decode(body) do
-      {:ok, data} -> data
-      {:error, _reason} -> nil
-    end
-  end
-  defp parse({:error, _reason}), do: nil
+  defp parse({:ok, body}), do: Poison.decode(body)
+  defp parse({:error, reason}), do: {:error, reason}
 
-  defp create_data_map(nil), do: {:error, :no_data_received}
-  defp create_data_map(data) do
+  defp create_data_map({:error, reason}), do: {:error, reason}
+  defp create_data_map({:ok, data}) do
     centigrade =
       data["main"]["temp"]
       |> kelvin_to_centigrade()
