@@ -5,11 +5,9 @@ defmodule ElixirWeatherData.OpenWeatherMapApi.HttpClient do
 
   defp request_api(url) do
     case HTTPoison.get(url) do
-      {:ok, %HTTPoison.Response{status_code: 200, body: body}} -> body
-      {:ok, %HTTPoison.Response{status_code: 404}} -> nil
-      {:error, %HTTPoison.Error{reason: reason}} ->
-        IO.inspect reason
-        nil
+      {:ok, %HTTPoison.Response{status_code: 200, body: body}} -> {:ok, body}
+      {:ok, %HTTPoison.Response{status_code: 404}} -> {:error, :page_not_found}
+      {:error, %HTTPoison.Error{reason: reason}} -> {:error, reason}
     end
   end
 end

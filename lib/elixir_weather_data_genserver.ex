@@ -1,27 +1,72 @@
 defmodule ElixirWeatherData.GenServer do
   use GenServer
 
+  @valid_languages ["en", "de"]
+
   def start_link(initial_value) do
     GenServer.start_link(__MODULE__, initial_value, name: __MODULE__)
   end
 
   def init(opts) do
-    {:ok, get_data(opts)}
+    case check_opts(opts) do
+      [] -> {:ok, get_data(opts)}
+      error_reasons -> {:stop, error_reasons}
+    end
   end
 
-  def handle_call(:get, _from, {:ok, value}) do
-    {:ok, new_state} =
-      case cached_data_should_be_updated?({:ok, value}) do
-        true ->
-          IO.inspect "1"
-          get_data(extract_request_parameters({:ok, value}))
-        _    ->
-          IO.inspect "2"
-          {:ok, value}
-      end
-    IO.inspect new_state
-    {:reply, Map.delete(new_state, :parameters), {:ok, new_state}}
+  def handle_call(:get, _from, {:error, parameters_map, _error_reason}) do
+    create_reply(extract_request_parameters({:error, parameters_map}))
   end
+  def handle_call(:get, _from, old_state = {:ok, _data}) do
+    case cached_data_should_be_updated?(old_state) do
+      true -> create_reply(old_state, extract_request_parameters(old_state))
+      _    -> create_reply(old_state)
+    end
+  end
+
+  defp create_reply({:ok, data}) do
+    {:reply, {:ok, Map.delete(data, :parameters)}, {:ok, data}}
+  end
+  defp create_reply(parameters) when is_map{parameters} do
+    case get_data(parameters) do
+      {:ok, data} -> create_reply({:ok, data})
+      {:error, parameters_map, error_reason} -> {:reply, {:error, error_reason}, {:error, parameters_map, error_reason}}
+    end
+  end
+  defp create_reply(old_state, parameters) when is_map(parameters) do
+    case get_data(parameters) do
+      {:ok, data} -> create_reply({:ok, data})
+      {:error, _parameters_map, _error_reason} -> create_reply(old_state)
+    end
+  end
+
+  defp check_opts([api_key, language, coordinates]) do
+    errors = check_api_key(api_key)
+    errors = [check_language(language) | errors]
+    errors = [check_coordinates(coordinates) | errors]
+    List.flatten(errors)
+  end
+
+  defp check_api_key(api_key) when is_binary(api_key) do
+    case String.match?(api_key, ~r/[a-z0-9]{32}/) do
+      true -> []
+      _ -> ["invalid api key given"]
+    end
+  end
+  defp check_api_key(_api_key), do: ["no api key given"]
+
+  defp check_language(language) when is_binary(language) do
+    case Enum.member?(@valid_languages, language) do
+      true -> []
+      _ -> ["invalid language given"]
+    end
+  end
+  defp check_language(_language), do: ["no language given"]
+
+  defp check_coordinates(%{lat: lat, lon: lon}) when is_float(lat) and is_float(lon) do
+    []
+  end
+  defp check_coordinates(_coordinates), do: ["no or invalid geo coordinates given"]
 
 
 
@@ -33,9 +78,6 @@ defmodule ElixirWeatherData.GenServer do
 
 
 
-  # @api_key "cb3b951fc2b009115c9f5ac870360ba6"
-  # @lang "de"
-  # @city "Claussnitz"
   @open_weather_map_api Application.get_env(:elixir_weather_data, :open_weather_map_api)
 
   defp get_data(parameters = [api_key, language, coordinates]) do
@@ -50,18 +92,17 @@ defmodule ElixirWeatherData.GenServer do
 
   defp cached_data_should_be_updated?({:error, _reason}), do: true
   defp cached_data_should_be_updated?({:ok, data}) do
-    data[:created_at] < (timestamp_now - 5) #84600)
+    one_hour_in_seconds = 60*60
+    data[:created_at] < (timestamp_now - one_hour_in_seconds)
   end
 
-  defp parse(nil), do: nil
-  defp parse(body) do
+  defp parse({:ok, body}) do
     case Poison.decode(body) do
       {:ok, data} -> data
-      {:error, reason} ->
-        IO.inspect reason
-        nil
+      {:error, _reason} -> nil
     end
   end
+  defp parse({:error, _reason}), do: nil
 
   defp create_data_map(nil), do: {:error, :no_data_received}
   defp create_data_map(data) do
@@ -88,9 +129,12 @@ defmodule ElixirWeatherData.GenServer do
   defp add_request_parameters({:ok, data}, parameters) do
     {:ok, Map.put(data, :parameters, parameters)}
   end
+  defp add_request_parameters({:error, error_reason}, parameters) do
+    {:error, %{parameters: parameters}, error_reason}
+  end
 
-  defp extract_request_parameters({:ok, data}) do
-    data[:parameters]
+  defp extract_request_parameters({_, %{parameters: parameters}}) do
+    parameters
   end
 
   defp round_value(value, precision \\ 0)
