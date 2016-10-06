@@ -3,10 +3,16 @@ defmodule ElixirWeatherData.GenServer do
 
   @valid_languages ["en", "de"]
 
+  @doc """
+  Starts the gen server.
+  """
   def start_link(initial_value) do
     GenServer.start_link(__MODULE__, initial_value, name: __MODULE__)
   end
 
+  @doc """
+  Checks the given options.
+  """
   def init(opts) do
     case check_opts(opts) do
       [] -> {:ok, get_data(opts)}
@@ -70,7 +76,11 @@ defmodule ElixirWeatherData.GenServer do
 
 
 
-
+  @doc """
+  Returns the current state:
+  * `{:ok, weather_data_map}`
+  * `{:error, error_reason_string}`
+  """
   def get do
     GenServer.call __MODULE__, :get
   end

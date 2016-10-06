@@ -1,4 +1,4 @@
-defmodule ElixirWeatherDataGenServerTest do
+defmodule ElixirWeatherDatai.GenServerTest do
   use ExUnit.Case, async: true
   doctest ElixirWeatherData.GenServer
 
