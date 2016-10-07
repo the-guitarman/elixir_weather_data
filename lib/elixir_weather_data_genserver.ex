@@ -76,6 +76,7 @@ defmodule ElixirWeatherData.GenServer do
 
 
 
+
   @doc """
   Returns the current state:
   * `{:ok, weather_data_map}`
@@ -88,13 +89,15 @@ defmodule ElixirWeatherData.GenServer do
 
 
 
-  @open_weather_map_api Application.get_env(:elixir_weather_data, :open_weather_map_api)
+  defp get_module(:prod), do: ElixirWeatherData.OpenWeatherMapApi.HttpClient
+  defp get_module(:dev), do: ElixirWeatherData.OpenWeatherMapApi.Sandbox
+  defp get_module(:test), do: ElixirWeatherData.OpenWeatherMapApi.InMemory
 
   defp get_data(parameters = [api_key, language, coordinates]) do
     lat = round_value(coordinates.lat, 2)
     lon = round_value(coordinates.lon, 2)
     "http://api.openweathermap.org/data/2.5/weather?lat=#{lat}&lon=#{lon}&lang=#{language}&appid=#{api_key}"
-    |> @open_weather_map_api.send_request
+    |> get_module(Mix.env).send_request
     |> parse
     |> create_data_map
     |> add_request_parameters(parameters)
