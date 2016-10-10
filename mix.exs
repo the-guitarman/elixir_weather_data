@@ -15,7 +15,7 @@ defmodule ElixirWeatherData.Mixfile do
   # Type "mix help compile.app" for more information
   def application do
     [
-      mod: { ElixirWeatherData, ["cb3b951fc2b009115c9f5ac870360ba6", "de", %{lat: 50.939583, lon: 12.886244}] },
+      mod: { ElixirWeatherData, [] },
       #env: [initial_value: nil],
       registered: [:elixir_weather_data],
       applications: [:tzdata, :logger, :httpoison]

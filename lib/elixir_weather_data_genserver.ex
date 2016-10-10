@@ -13,7 +13,12 @@ defmodule ElixirWeatherData.GenServer do
   @doc """
   Checks the given options.
   """
-  def init(opts) do
+  def init(_opts) do
+    opts = [
+      Application.get_env(:elixir_weather_data, :api)[:key],
+      Application.get_env(:elixir_weather_data, :api)[:language],
+      Enum.into(Application.get_env(:elixir_weather_data, :api)[:coordinates], %{})
+    ]
     case check_opts(opts) do
       [] -> {:ok, get_data(opts)}
       error_reasons -> {:stop, error_reasons}
