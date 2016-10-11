@@ -1,5 +1,5 @@
-[![Build Status](https://travis-ci.org/the-guitarman/club_homepage.svg?branch=master)](https://travis-ci.org/the-guitarman/club_homepage)
-[![Code Climate](https://codeclimate.com/github/the-guitarman/club_homepage/badges/gpa.svg)](https://codeclimate.com/github/the-guitarman/club_homepage)
+[![Build Status](https://travis-ci.org/the-guitarman/elixir_weather_data.svg?branch=master)](https://travis-ci.org/the-guitarman/elixir_weather_data)
+[![Code Climate](https://codeclimate.com/github/the-guitarman/elixir_weather_data/badges/gpa.svg)](https://codeclimate.com/github/the-guitarman/elixir_weather_data)
 [![Built with Spacemacs](https://cdn.rawgit.com/syl20bnr/spacemacs/442d025779da2f62fc86c2082703697714db6514/assets/spacemacs-badge.svg)](http://github.com/syl20bnr/spacemacs)
 
 # ElixirWeatherData
@@ -46,6 +46,8 @@ If [available in Hex](https://hex.pm/docs/publish), the package can be installed
   ```
   
   In case of an error at the first openweathermap api request, you will get `{:error, <some error reason>}`, otherwise it will return the last received data. 
+  
+  Note: In dev mode you always get the result above.
   
 ## License
 
