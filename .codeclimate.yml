@@ -22,5 +22,4 @@ ratings:
   - "**.module"
 exclude_paths:
 - config/**/*
-- test/**/*
 - web/static/vendor/**/*
