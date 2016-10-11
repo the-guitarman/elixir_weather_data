@@ -14,3 +14,6 @@ before_script:
   - mix deps.get --only test
 #script: MIX_ENV=test mix do deps.get, test
 script: MIX_ENV=test mix test
+addons:
+  code_climate:
+    repo_token: f4c6a8cbc81b9942ae98f71ebff6ab199b9da14bb09974f49a9977cbae4b5799
