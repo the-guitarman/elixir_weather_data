@@ -5,8 +5,10 @@ defmodule ElixirWeatherData.Mixfile do
     [app: :elixir_weather_data,
      version: "0.1.0",
      elixir: "~> 1.3",
+     description: "This application provides the current weather data for the given geo coordinates (latitude/longitude) based on openweathermap.org v2.5.",
      build_embedded: Mix.env == :prod,
      start_permanent: Mix.env == :prod,
+     package: package(),
      deps: deps()]
   end
 
@@ -19,6 +21,16 @@ defmodule ElixirWeatherData.Mixfile do
       #env: [initial_value: nil],
       registered: [:elixir_weather_data],
       applications: [:tzdata, :logger, :httpoison]
+    ]
+  end
+
+  def package do
+    [
+      name: :elixir_weather_data,
+      files: ["lib", "mix.exs"],
+      maintainers: ["guitarman78"],
+      licenses: ["LGPL 3.0"],
+      links: %{"Github" => "https://github.com/the-guitarman/elixir_weather_data"}
     ]
   end
 
