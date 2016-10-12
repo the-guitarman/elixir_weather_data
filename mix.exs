@@ -6,6 +6,7 @@ defmodule ElixirWeatherData.Mixfile do
      version: "0.1.0",
      elixir: "~> 1.3",
      description: "This application provides the current weather data for the given geo coordinates (latitude/longitude) based on openweathermap.org v2.5.",
+     docs: [extras: ["README.md"]],
      build_embedded: Mix.env == :prod,
      start_permanent: Mix.env == :prod,
      package: package(),
