@@ -95,7 +95,14 @@ defmodule ElixirWeatherData.GenServer do
 
 
   defp get_module(:prod), do: ElixirWeatherData.OpenWeatherMapApi.HttpClient
-  defp get_module(:dev), do: ElixirWeatherData.OpenWeatherMapApi.Sandbox
+  defp get_module(:dev) do
+    #ElixirWeatherData.OpenWeatherMapApi.HttpClient
+    case Application.get_env(:elixir_weather_data, :api)[:dev_mode] do
+      nil -> ElixirWeatherData.OpenWeatherMapApi.Sandbox
+      :sandbox -> ElixirWeatherData.OpenWeatherMapApi.Sandbox
+      :http_client -> ElixirWeatherData.OpenWeatherMapApi.HttpClient
+    end
+  end
   defp get_module(:test), do: ElixirWeatherData.OpenWeatherMapApi.InMemory
 
   defp get_data(parameters = [api_key, language, coordinates]) do
