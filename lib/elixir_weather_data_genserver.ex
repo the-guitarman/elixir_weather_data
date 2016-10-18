@@ -96,8 +96,7 @@ defmodule ElixirWeatherData.GenServer do
 
   defp get_module(:prod), do: ElixirWeatherData.OpenWeatherMapApi.HttpClient
   defp get_module(:dev) do
-    #ElixirWeatherData.OpenWeatherMapApi.HttpClient
-    case Application.get_env(:elixir_weather_data, :api)[:dev_mode] do
+    case Application.get_env(:elixir_weather_data, :dev)[:mode] do
       nil -> ElixirWeatherData.OpenWeatherMapApi.Sandbox
       :sandbox -> ElixirWeatherData.OpenWeatherMapApi.Sandbox
       :http_client -> ElixirWeatherData.OpenWeatherMapApi.HttpClient

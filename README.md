@@ -14,7 +14,7 @@ If [available in Hex](https://hex.pm/docs/publish), the package can be installed
 
     ```elixir
     def deps do
-      [{:elixir_weather_data, "~> 0.1.0"}]
+      [{:elixir_weather_data, "~> 0.1.1"}]
     end
     ```
 
@@ -34,6 +34,23 @@ If [available in Hex](https://hex.pm/docs/publish), the package can be installed
     language: "<your openweathermap language: en, de or ...>",
     coordinates: [lat: 50.939583, lon: 12.886244]
   ```
+  
+  In the production environment the app will request the api of openweathermap.org to get the data. 
+  
+  In the development environment you may want to dicide to use sandbox data or send requests to the api of openweathermap.org. There are to modes available:
+  - `:sandbox`
+  - `:http_client`
+  It defaults to `:sandbox`.
+  
+  ```elixir
+  config :elixir_weather_data, :dev,
+    mode: :sandbox
+    
+  # or
+  
+  config :elixir_weather_data, :dev,
+    mode: :http_client
+  ```
 
 ## Usage
 
@@ -46,8 +63,6 @@ If [available in Hex](https://hex.pm/docs/publish), the package can be installed
   ```
   
   In case of an error at the first openweathermap api request, you will get `{:error, <some error reason>}`, otherwise it will return the last received data. 
-  
-  Note: In dev mode you always get the result above.
   
 ## License
 
