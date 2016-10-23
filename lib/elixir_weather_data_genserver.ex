@@ -130,19 +130,26 @@ defmodule ElixirWeatherData.GenServer do
       |> kelvin_to_centigrade()
       |> round_value(1)
 
+    humidity = data["main"]["humidity"]
+
+    pressure = data["main"]["pressure"]
+
     fahrenheit = centigrade_to_fahrenheit(centigrade)
 
     [%{"description" => description} | _tail] = data["weather"]
+    [%{"icon" => icon} | _tail] = data["weather"]
 
     wind_in_meters_per_second =
       data["wind"]["speed"]
       |> round_value(1)
 
+    wind_direction_in_degrees = data["wind"]["deg"]
+
     wind_in_kilometers_per_hour =
       meters_per_second_to_kilometers_per_hour(wind_in_meters_per_second)
       |> round_value
 
-    {:ok, %{created_at: timestamp_now, centigrade: centigrade, fahrenheit: fahrenheit, weather: description, wind_in_kilometers_per_hour: wind_in_kilometers_per_hour, wind_in_meters_per_second: wind_in_meters_per_second}}
+      {:ok, %{created_at: timestamp_now, centigrade: centigrade, fahrenheit: fahrenheit, weather: description, wind_in_kilometers_per_hour: wind_in_kilometers_per_hour, wind_in_meters_per_second: wind_in_meters_per_second, humidity_in_percent: humidity, pressure_in_hectopascal: pressure, icon_url: "http://openweathermap.org/img/w/#{icon}.png", wind_direction_in_degrees: wind_direction_in_degrees}}
   end
 
   defp add_request_parameters({:ok, data}, parameters) do
