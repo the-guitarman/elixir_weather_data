@@ -132,7 +132,9 @@ defmodule ElixirWeatherData.GenServer do
 
     humidity = data["main"]["humidity"]
 
-    pressure = data["main"]["pressure"]
+    pressure =
+      data["main"]["pressure"]
+      |> round_value 
 
     fahrenheit = centigrade_to_fahrenheit(centigrade)
 
@@ -143,13 +145,15 @@ defmodule ElixirWeatherData.GenServer do
       data["wind"]["speed"]
       |> round_value(1)
 
-    wind_direction_in_degrees = data["wind"]["deg"]
+    wind_direction_in_degrees =
+      data["wind"]["deg"]
+      |> round_value
 
     wind_in_kilometers_per_hour =
       meters_per_second_to_kilometers_per_hour(wind_in_meters_per_second)
       |> round_value
 
-      {:ok, %{created_at: timestamp_now, centigrade: centigrade, fahrenheit: fahrenheit, weather: description, wind_in_kilometers_per_hour: wind_in_kilometers_per_hour, wind_in_meters_per_second: wind_in_meters_per_second, humidity_in_percent: humidity, pressure_in_hectopascal: pressure, icon_url: "http://openweathermap.org/img/w/#{icon}.png", wind_direction_in_degrees: wind_direction_in_degrees}}
+    {:ok, %{created_at: timestamp_now, centigrade: centigrade, fahrenheit: fahrenheit, weather: description, wind_in_kilometers_per_hour: wind_in_kilometers_per_hour, wind_in_meters_per_second: wind_in_meters_per_second, humidity_in_percent: humidity, pressure_in_hectopascal: pressure, icon: icon, icon_url: "http://openweathermap.org/img/w/#{icon}.png", wind_direction_in_degrees: wind_direction_in_degrees}}
   end
 
   defp add_request_parameters({:ok, data}, parameters) do
@@ -164,6 +168,9 @@ defmodule ElixirWeatherData.GenServer do
   end
 
   defp round_value(value, precision \\ 0)
+  defp round_value(value, 0) do 
+    round(value)
+  end
   defp round_value(value, precision) when is_float(value) do
     Float.round(value, precision)
   end
