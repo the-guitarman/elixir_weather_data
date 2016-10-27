@@ -56,10 +56,20 @@ If [available in Hex](https://hex.pm/docs/publish), the package can be installed
 
   ```elixir
   ElixirWeatherData.get
-  # => {:ok,
-  %{centigrade: 14.5, created_at: 1476096476, fahrenheit: 58.1,
-   weather: "cloudy", wind_in_kilometers_per_hour: 10.0,
-   wind_in_meters_per_second: 2.9}}
+  # => {:ok, %{
+  #  centigrade: 14, 
+  #  created_at: 1477595605, 
+  #  fahrenheit: 57,
+  #  humidity_in_percent: 97, 
+  #  icon: "04n",
+  #  icon_url: "http://openweathermap.org/img/w/04n.png",
+  #  pressure_in_hectopascal: 997, 
+  #  weather: "cloudy",
+  #  wind_direction_abbreviation: "WSW", 
+  #  wind_direction_in_degrees: 246,
+  #  wind_in_kilometers_per_hour: 11, 
+  #  wind_in_meters_per_second: 3
+  # }}
   ```
   
   In case of an error at the first openweathermap api request, you will get `{:error, <some error reason>}`, otherwise it will return the last received data. 
