@@ -128,22 +128,25 @@ defmodule ElixirWeatherData.GenServer do
     centigrade =
       data["main"]["temp"]
       |> kelvin_to_centigrade()
-      |> round_value(1)
+      |> round_value
 
     humidity = data["main"]["humidity"]
 
     pressure =
       data["main"]["pressure"]
-      |> round_value 
+      |> round_value
 
-    fahrenheit = centigrade_to_fahrenheit(centigrade)
+    fahrenheit =
+      centigrade
+      |> centigrade_to_fahrenheit
+      |> round_value
 
     [%{"description" => description} | _tail] = data["weather"]
     [%{"icon" => icon} | _tail] = data["weather"]
 
     wind_in_meters_per_second =
       data["wind"]["speed"]
-      |> round_value(1)
+      |> round_value
 
     wind_direction_in_degrees =
       data["wind"]["deg"]
@@ -153,7 +156,7 @@ defmodule ElixirWeatherData.GenServer do
       meters_per_second_to_kilometers_per_hour(wind_in_meters_per_second)
       |> round_value
 
-    {:ok, %{created_at: timestamp_now, centigrade: centigrade, fahrenheit: fahrenheit, weather: description, wind_in_kilometers_per_hour: wind_in_kilometers_per_hour, wind_in_meters_per_second: wind_in_meters_per_second, humidity_in_percent: humidity, pressure_in_hectopascal: pressure, icon: icon, icon_url: "http://openweathermap.org/img/w/#{icon}.png", wind_direction_in_degrees: wind_direction_in_degrees}}
+    {:ok, %{created_at: timestamp_now, centigrade: centigrade, fahrenheit: fahrenheit, weather: description, wind_in_kilometers_per_hour: wind_in_kilometers_per_hour, wind_in_meters_per_second: wind_in_meters_per_second, humidity_in_percent: humidity, pressure_in_hectopascal: pressure, icon: icon, icon_url: "http://openweathermap.org/img/w/#{icon}.png", wind_direction_in_degrees: wind_direction_in_degrees, wind_direction_abbreviation: wind_direction_abbreviation(wind_direction_in_degrees)}}
   end
 
   defp add_request_parameters({:ok, data}, parameters) do
@@ -168,7 +171,7 @@ defmodule ElixirWeatherData.GenServer do
   end
 
   defp round_value(value, precision \\ 0)
-  defp round_value(value, 0) do 
+  defp round_value(value, 0) do
     round(value)
   end
   defp round_value(value, precision) when is_float(value) do
@@ -191,5 +194,30 @@ defmodule ElixirWeatherData.GenServer do
   defp timestamp_now do
     Timex.DateTime.local
     |> Timex.to_unix()
+  end
+
+  defp wind_direction_abbreviation(degrees) do
+    directions = %{
+      [348.75, 360] => "N",
+      [0, 11.25] => "N",
+      [11.25, 33.75] => "NNE",
+      [33.75, 56.25] => "NE",
+      [56.25, 78.75] => "ENE",
+      [78.75, 101.25] => "E",
+      [101.25, 123.75] => "ESE",
+      [123.75, 146.25] => "SE",
+      [146.25, 168.75] => "SSE",
+      [168.75, 191.25] => "S",
+      [191.25, 213.75] => "SSW",
+      [213.75, 236.25] => "SW",
+      [236.25, 258.75] => "WSW",
+      [258.75, 281.25] => "W",
+      [281.25, 303.75] => "WNW",
+      [303.75, 326.25] => "NW",
+      [326.25, 348.75] => "NNW"
+    }
+
+    {_key, direction_abbravation} = Enum.find(directions, fn{[first, last], v} -> first <= degrees && degrees <= last end)
+    direction_abbravation
   end
 end
