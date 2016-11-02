@@ -38,16 +38,16 @@ defmodule ElixirWeatherData.GenServer do
   defp create_reply({:ok, data}) do
     {:reply, {:ok, Map.delete(data, :parameters)}, {:ok, data}}
   end
-  defp create_reply(parameters) do # when is_map{parameters} do
-    case get_data(parameters) do
-      {:ok, data} -> create_reply({:ok, data})
-      {:error, parameters_map, error_reason} -> {:reply, {:error, error_reason}, {:error, parameters_map, error_reason}}
-    end
-  end
-  defp create_reply(old_state, parameters) when is_map(parameters) do
+  defp create_reply(old_state, parameters) when is_tuple(old_state) and is_list(parameters) do
     case get_data(parameters) do
       {:ok, data} -> create_reply({:ok, data})
       {:error, _parameters_map, _error_reason} -> create_reply(old_state)
+    end
+  end
+  defp create_reply(parameters) when is_list(parameters) do
+    case get_data(parameters) do
+      {:ok, data} -> create_reply({:ok, data})
+      {:error, parameters_map, error_reason} -> {:reply, {:error, error_reason}, {:error, parameters_map, error_reason}}
     end
   end
 
@@ -217,7 +217,7 @@ defmodule ElixirWeatherData.GenServer do
       [326.25, 348.75] => "NNW"
     }
 
-    {_key, direction_abbravation} = Enum.find(directions, fn{[first, last], v} -> first <= degrees && degrees <= last end)
+    {_key, direction_abbravation} = Enum.find(directions, fn{[first, last], _value} -> first <= degrees && degrees <= last end)
     direction_abbravation
   end
 end
