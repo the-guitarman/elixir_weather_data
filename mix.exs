@@ -3,7 +3,7 @@ defmodule ElixirWeatherData.Mixfile do
 
   def project do
     [app: :elixir_weather_data,
-     version: "0.1.5",
+     version: "0.1.6",
      elixir: "~> 1.3",
      description: "This application provides the current weather data for the given geo coordinates (latitude/longitude) based on openweathermap.org v2.5.",
      docs: [extras: ["README.md"]],

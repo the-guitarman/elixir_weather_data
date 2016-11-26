@@ -35,6 +35,9 @@ defmodule ElixirWeatherData.GenServer do
     end
   end
 
+  defp create_reply({:ok, data}) when is_map(data) do
+    {:reply, {:ok, Map.delete(data, :parameters)}, {:ok, data}}
+  end
   defp create_reply(old_state, parameters) when is_tuple(old_state) and is_list(parameters) do
     case get_data(parameters) do
       {:ok, data} -> create_reply({:ok, data})
@@ -46,9 +49,6 @@ defmodule ElixirWeatherData.GenServer do
       {:ok, data} -> create_reply({:ok, data})
       {:error, parameters_map, error_reason} -> {:reply, {:error, error_reason}, {:error, parameters_map, error_reason}}
     end
-  end
-  defp create_reply({:ok, data}) do
-    {:reply, {:ok, Map.delete(data, :parameters)}, {:ok, data}}
   end
 
   defp check_opts([api_key, language, coordinates]) do
