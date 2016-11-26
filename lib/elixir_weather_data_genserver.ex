@@ -171,6 +171,7 @@ defmodule ElixirWeatherData.GenServer do
   end
 
   defp round_value(value, precision \\ 0)
+  defp round_value(nil, _), do: nil
   defp round_value(value, 0) do
     round(value)
   end
@@ -196,6 +197,7 @@ defmodule ElixirWeatherData.GenServer do
     |> Timex.to_unix()
   end
 
+  defp wind_direction_abbreviation(nil), do: ""
   defp wind_direction_abbreviation(degrees) do
     directions = %{
       [348.75, 360] => "N",
