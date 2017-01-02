@@ -193,7 +193,7 @@ defmodule ElixirWeatherData.GenServer do
   end
 
   defp timestamp_now do
-    Timex.DateTime.local
+    Timex.local
     |> Timex.to_unix()
   end
 
