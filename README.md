@@ -14,7 +14,7 @@ If [available in Hex](https://hex.pm/docs/publish), the package can be installed
 
     ```elixir
     def deps do
-      [{:elixir_weather_data, "~> 0.1.6"}]
+      [{:elixir_weather_data, "~> 0.1.7"}]
     end
     ```
 
