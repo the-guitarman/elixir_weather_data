@@ -117,7 +117,7 @@ defmodule ElixirWeatherData.GenServer do
   defp cached_data_should_be_updated?({:error, _reason}), do: true
   defp cached_data_should_be_updated?({:ok, data}) do
     one_hour_in_seconds = 60*60
-    data[:created_at] < (timestamp_now - one_hour_in_seconds)
+    data[:created_at] < (timestamp_now() - one_hour_in_seconds)
   end
 
   defp parse({:ok, body}), do: Poison.decode(body)
@@ -156,7 +156,7 @@ defmodule ElixirWeatherData.GenServer do
       meters_per_second_to_kilometers_per_hour(wind_in_meters_per_second)
       |> round_value
 
-    {:ok, %{created_at: timestamp_now, centigrade: centigrade, fahrenheit: fahrenheit, weather: description, wind_in_kilometers_per_hour: wind_in_kilometers_per_hour, wind_in_meters_per_second: wind_in_meters_per_second, humidity_in_percent: humidity, pressure_in_hectopascal: pressure, icon: icon, icon_url: "http://openweathermap.org/img/w/#{icon}.png", wind_direction_in_degrees: wind_direction_in_degrees, wind_direction_abbreviation: wind_direction_abbreviation(wind_direction_in_degrees)}}
+    {:ok, %{created_at: timestamp_now(), centigrade: centigrade, fahrenheit: fahrenheit, weather: description, wind_in_kilometers_per_hour: wind_in_kilometers_per_hour, wind_in_meters_per_second: wind_in_meters_per_second, humidity_in_percent: humidity, pressure_in_hectopascal: pressure, icon: icon, icon_url: "http://openweathermap.org/img/w/#{icon}.png", wind_direction_in_degrees: wind_direction_in_degrees, wind_direction_abbreviation: wind_direction_abbreviation(wind_direction_in_degrees)}}
   end
 
   defp add_request_parameters({:ok, data}, parameters) do
