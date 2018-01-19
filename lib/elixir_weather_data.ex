@@ -6,6 +6,6 @@ defmodule ElixirWeatherData do
   end
 
   def get do
-    ElixirWeatherData.GenServer.get
+    ElixirWeatherData.GenServer.get()
   end
 end
