@@ -1,8 +1,8 @@
 language: elixir
 elixir:
-  - 1.4.4
+  - 1.6
 env:
-  - ELIXIR="v1.4.4"
+  - ELIXIR="v1.6"
 otp_release:
   - 19.0
 sudo: false
