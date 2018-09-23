@@ -14,7 +14,7 @@ If [available in Hex](https://hex.pm/docs/publish), the package can be installed
 
     ```elixir
     def deps do
-      [{:elixir_weather_data, "~> 0.2.2"}]
+      [{:elixir_weather_data, "~> 0.2"}]
     end
     ```
 
@@ -51,6 +51,14 @@ If [available in Hex](https://hex.pm/docs/publish), the package can be installed
   config :elixir_weather_data, :dev,
     mode: :http_client
   ```
+  
+  4. You may configure the gen server timeout:
+  
+  ```elixir
+  config :elixir_weather_data, :gen_server,
+    call_timeout: 2000
+  ```
+  
 
 ## Usage
 

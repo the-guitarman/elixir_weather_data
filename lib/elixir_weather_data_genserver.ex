@@ -2,6 +2,7 @@ defmodule ElixirWeatherData.GenServer do
   use GenServer
 
   @valid_languages ["en", "de"]
+  @default_call_timeout 2000
 
   @doc """
   Starts the gen server.
@@ -88,7 +89,11 @@ defmodule ElixirWeatherData.GenServer do
   * `{:error, error_reason_string}`
   """
   def get do
-    GenServer.call __MODULE__, :get#, 30_000
+    try do
+      GenServer.call(__MODULE__, :get, get_timeout_config())
+    catch
+      _error, _params -> {:error, :gen_server_error}
+    end
   end
 
 
@@ -222,5 +227,9 @@ defmodule ElixirWeatherData.GenServer do
 
     {_key, direction_abbravation} = Enum.find(directions, fn{[first, last], _value} -> first <= degrees && degrees <= last end)
     direction_abbravation
+  end
+
+  defp get_timeout_config() do
+    Application.get_env(:elixir_weather_data, :gen_server)[:call_timeout] || @default_call_timeout
   end
 end
