@@ -92,7 +92,7 @@ defmodule ElixirWeatherData.GenServer do
     try do
       GenServer.call(__MODULE__, :get, get_timeout_config())
     catch
-      error, params -> {:error, :gen_server_error}
+      _error, _params -> {:error, :gen_server_error}
     end
   end
 
