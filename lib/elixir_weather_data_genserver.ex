@@ -7,8 +7,8 @@ defmodule ElixirWeatherData.GenServer do
   @doc """
   Starts the gen server.
   """
-  def start_link(initial_value) do
-    GenServer.start_link(__MODULE__, initial_value, name: __MODULE__)
+  def start_link(opts) do
+    GenServer.start_link(__MODULE__, :ok, opts)
   end
 
   @doc """
@@ -92,7 +92,7 @@ defmodule ElixirWeatherData.GenServer do
     try do
       GenServer.call(__MODULE__, :get, get_timeout_config())
     catch
-      _error, _params -> {:error, :gen_server_error}
+      error, params -> {:error, :gen_server_error}
     end
   end
 

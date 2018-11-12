@@ -3,8 +3,8 @@ defmodule ElixirWeatherData.Mixfile do
 
   def project do
     [app: :elixir_weather_data,
-     version: "0.2.3",
-     elixir: "~> 1.6",
+     version: "0.2.4",
+     elixir: "~> 1.7",
      description: "This application provides the current weather data for the given geo coordinates (latitude/longitude) based on openweathermap.org v2.5.",
      docs: [extras: ["README.md"]],
      build_embedded: Mix.env == :prod,
@@ -18,10 +18,9 @@ defmodule ElixirWeatherData.Mixfile do
   # Type "mix help compile.app" for more information
   def application do
     [
-      mod: { ElixirWeatherData, [] },
-      #env: [initial_value: nil],
-      registered: [:elixir_weather_data],
-      applications: [:tzdata, :logger, :httpoison]
+      application: [:tzdata, :httpoison],
+      extra_applications: [:logger],
+      mod: {ElixirWeatherData, []}
     ]
   end
 
@@ -47,8 +46,8 @@ defmodule ElixirWeatherData.Mixfile do
   defp deps do
     [
       {:poison, "~> 2.2 or ~> 3.1", optional: true},
-      {:httpoison, "~> 0.11.0"},
-      {:timex, "~> 3.0"},
+      {:httpoison, "~> 0.11"},
+      {:timex, "~> 3.3"},
       {:ex_doc, ">= 0.0.0", only: :dev}
     ]
   end
