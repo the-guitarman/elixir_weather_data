@@ -48,7 +48,7 @@ defmodule ElixirWeatherData.Mixfile do
       {:poison, "~> 2.2 or ~> 3.1", optional: true},
       {:httpoison, "~> 0.11"},
       {:timex, "~> 3.3"},
-      {:ex_doc, ">= 0.0.0", only: :dev}
+      {:ex_doc, "~> 0.19", only: :dev, runtime: false}
     ]
   end
 end
