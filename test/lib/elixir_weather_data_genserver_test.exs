@@ -1,9 +1,11 @@
-defmodule ElixirWeatherDatai.GenServerTest do
-  use ExUnit.Case, async: true
+defmodule ElixirWeatherData.GenServerTest do
+  use ExUnit.Case, async: false
   doctest ElixirWeatherData.GenServer
 
   test "gen server state" do
-    case ElixirWeatherData.GenServer.get do
+    assert Application.get_env(:elixir_weather_data, :api)
+
+    case ElixirWeatherData.GenServer.get() do
       {:ok, data} ->
         assert data[:centigrade] == 14
         #assert data[:created_at] == 1475699097

@@ -15,10 +15,17 @@ defmodule ElixirWeatherData.GenServer do
   Checks the given options.
   """
   def init(_opts) do
+    Application.get_env(:elixir_weather_data, :api)
+    coordinates =
+      case Application.get_env(:elixir_weather_data, :api) do
+        nil -> nil
+        data -> Enum.into(data[:coordinates], %{})
+      end
+
     opts = [
       Application.get_env(:elixir_weather_data, :api)[:key],
       Application.get_env(:elixir_weather_data, :api)[:language],
-      Enum.into(Application.get_env(:elixir_weather_data, :api)[:coordinates], %{})
+      coordinates
     ]
     case check_opts(opts) do
       [] -> {:ok, get_data(opts)}
