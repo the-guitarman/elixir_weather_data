@@ -15,7 +15,6 @@ defmodule ElixirWeatherData.GenServer do
   Checks the given options.
   """
   def init(_opts) do
-    Application.get_env(:elixir_weather_data, :api)
     coordinates =
       case Application.get_env(:elixir_weather_data, :api) do
         nil -> nil
@@ -46,16 +45,16 @@ defmodule ElixirWeatherData.GenServer do
   defp create_reply({:ok, data}) when is_map(data) do
     {:reply, {:ok, Map.delete(data, :parameters)}, {:ok, data}}
   end
-  defp create_reply(old_state, parameters) when is_tuple(old_state) and is_list(parameters) do
-    case get_data(parameters) do
-      {:ok, data} -> create_reply({:ok, data})
-      {:error, _parameters_map, _error_reason} -> create_reply(old_state)
-    end
-  end
   defp create_reply(parameters) when is_list(parameters) do
     case get_data(parameters) do
       {:ok, data} -> create_reply({:ok, data})
       {:error, parameters_map, error_reason} -> {:reply, {:error, error_reason}, {:error, parameters_map, error_reason}}
+    end
+  end
+  defp create_reply(old_state, parameters) when is_tuple(old_state) and is_list(parameters) do
+    case get_data(parameters) do
+      {:ok, data} -> create_reply({:ok, data})
+      {:error, _parameters_map, _error_reason} -> create_reply(old_state)
     end
   end
 
@@ -108,20 +107,29 @@ defmodule ElixirWeatherData.GenServer do
 
   defp get_module(:prod), do: ElixirWeatherData.OpenWeatherMapApi.HttpClient
   defp get_module(:dev) do
-    case Application.get_env(:elixir_weather_data, :dev)[:mode] do
-      nil -> ElixirWeatherData.OpenWeatherMapApi.Sandbox
+    case get_module_dev_mode() do
       :sandbox -> ElixirWeatherData.OpenWeatherMapApi.Sandbox
       :http_client -> ElixirWeatherData.OpenWeatherMapApi.HttpClient
+      _ -> ElixirWeatherData.OpenWeatherMapApi.Sandbox
     end
   end
   defp get_module(:test), do: ElixirWeatherData.OpenWeatherMapApi.InMemory
+  defp get_module(_), do: ElixirWeatherData.OpenWeatherMapApi.Sandbox
+
+  defp get_module_dev_mode() do
+    Application.get_env(:elixir_weather_data, :dev)
+    |> get_module_dev_mode()
+  end
+  defp get_module_dev_mode(dev_config) when is_list(dev_config) do
+    Keyword.get(dev_config, :mode, :sandbox)
+  end
 
   defp get_data(parameters = [api_key, language, coordinates]) do
     lat = round_value(coordinates.lat, 2)
     lon = round_value(coordinates.lon, 2)
 
     "http://api.openweathermap.org/data/2.5/weather?lat=#{lat}&lon=#{lon}&lang=#{language}&appid=#{api_key}"
-    |> get_module(Mix.env).send_request()
+    |> get_module(ElixirWeatherData.env()).send_request()
     |> parse()
     |> create_data_map()
     |> add_request_parameters(parameters)

@@ -8,4 +8,8 @@ defmodule ElixirWeatherData do
   def get do
     ElixirWeatherData.GenServer.get()
   end
+
+  def env() do
+    Application.get_env(:elixir_weather_data, :environment, nil)
+  end
 end

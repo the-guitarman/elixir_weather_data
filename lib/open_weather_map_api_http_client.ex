@@ -24,9 +24,9 @@ defmodule ElixirWeatherData.OpenWeatherMapApi.HttpClient do
         %HTTPoison.Error{reason: reason} -> {:error, reason}
         _ -> {:error, :unknown_error}
       end
-    catch
-      _ -> {:error, :timeout}
     rescue
+      _ -> {:error, :timeout}
+    catch
       _ -> {:error, :timeout}
     end
   end
